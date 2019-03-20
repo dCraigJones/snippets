@@ -51,11 +51,12 @@ def path_to_HQ(self, timg, minFlow, maxFlow, minHead, maxHead, step):
 		pxH = (maxHead-minHead)/(Hr-y0)
 
 		
-		text = range(0,n-3,1)
+		#text = range(0,n-3,1)
+		text = "  Q  " + "     " + "  H  " + "\n"
 		
 		# Pump Curve
 		for i in range(0,n-3,1):
-			text[i] = round((xr[i]-x0)*pxQ/step,0)*step, round((yr[i]-y0)*pxH,0)+minHead, "     "
+			text = text + str(round((xr[i]-x0)*pxQ/step,1)*step) + "     " +str(round((yr[i]-y0)*pxH,1)+minHead) + "\n"
 			
 				
 		pdb.gimp_message(text)
