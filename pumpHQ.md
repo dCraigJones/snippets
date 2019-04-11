@@ -25,4 +25,4 @@ Open the “Image to H-Q Table” tool under Filters and define the boundary val
 
 ![](img/pumpHQ-input.jpg)
 
-The script with rotate the pump curve about the axis intercept (if needed) and round to the nearest user-defined interval.
+The script rotates the pump curve about the axis intercept (if needed) and rounds to the nearest user-defined interval.
