@@ -1,3 +1,24 @@
+
+# TO-DO -------------------------------------------------------------------
+
+# Add ke friction function
+# Add Draw Legend
+# rename all functions
+# Add summary text
+
+# Good names: ff, shift, tilt, 
+
+# Keep --------------------------------------------------------------------
+# Standard JEA Colors
+JEA.Dark <- rgb(t(matrix(c(20, 43, 108)/255)))
+JEA.Blue <- rgb(t(matrix(c(0, 106, 151)/255)))
+JEA.Green <- rgb(t(matrix(c(65, 173, 73)/255)))
+JEA.Orange <- rgb(t(matrix(c(244, 199, 33)/255)))
+JEA.Grey <- rgb(t(matrix(c(109, 110, 113)/255)))
+JEA.Grey <- rgb(109/255, 110/255, 113/255, 0.5)
+
+# pass single arguement for max flow, default 5000 GPM
+# assume max pressure is always 100 PSI
 n185 <- function(FlowScale,HeadScale, HeadUnits) {
   
   
@@ -113,16 +134,6 @@ ff <- function(Ps, Qt, Pt, color="black", LineType = 1) {
   
   return(k_psi)
 }
-ffk <- function(Ps, Qt, Pt) {
-  Qi <- seq(0,10000,1000)
-  Pi <- Ps - (Ps-Pt)*(Qi/Qt)^1.85
-  
-  #lines(Qi^1.85,Pi, col=color, lwd=2, lty=LineType)
-  
-  k_psi <- (Ps-Pt)/(Qt^1.85)
-  
-  return(k_psi)
-}
 shift <- function(Ps,k, color="black", LineType=1) {
   ff(Ps,1000,Ps - k*1000^1.85, color, LineType)
 }
@@ -131,23 +142,36 @@ tilt <- function(static,k,kf,color="black", LineType=1) {
   
   ff(static,Qt,static-Qt^1.85*(kf+k), color,LineType)
 }
+
+# ?rename avail? or aff "Available fire flow"
+Calc.Q.at20 <- function(S,k) {
+  Q <- ((S-20)/k)^(1/1.85)
+  return(Q)
+}
+
+# nff "needed fire flow"
 fp <- function(Qi, Ps, Qt, Pt) {
   Pi <- Ps - (Ps-Pt)*(Qi/Qt)^1.85
   return(Pi)
   
 }
+
 pt <- function(Qt, Pt, color){
   points(Qt^1.85,Pt, pch=21, bg="white", col=color, lwd=2, cex=2)
 }
-kl <- function(k, color="black", LineType=2, static=0){
-  Qi <- seq(0,10000,1000)
-  Pi <- k*Qi^1.85+static
-  lines(Qi^1.85,Pi, col=color, lwd=2, lty=LineType)
-}
+
+
+#?hl "headloss"
 kp <- function(q,k) {
   h <- k*q^1.85
   return(h)
 }
+
+
+
+# Review ------------------------------------------------------------------
+
+
 Load_Fire_Flow_Matrix <- function(data) {
   FID <- data[,"FID"]
   Ps <- data[,"Static"]
@@ -158,23 +182,13 @@ Load_Fire_Flow_Matrix <- function(data) {
   return(FireFlowData)
 }
 
-# Standard JEA Colors
-JEA.Dark <- rgb(t(matrix(c(20, 43, 108)/255)))
-JEA.Blue <- rgb(t(matrix(c(0, 106, 151)/255)))
-JEA.Green <- rgb(t(matrix(c(65, 173, 73)/255)))
-JEA.Orange <- rgb(t(matrix(c(244, 199, 33)/255)))
-JEA.Grey <- rgb(t(matrix(c(109, 110, 113)/255)))
-JEA.Grey <- rgb(109/255, 110/255, 113/255, 0.5)
+
 
 Calc.C <- function(k.target, k.source, d.pipe, L.pipe) {
   C.pipe <- 1/((2.31*(k.target-k.source)*d.pipe^4.87)/(10.44*L.pipe))^(1/1.85)
   return(C.pipe)
 }
 
-Calc.Q.at20 <- function(S,k) {
-  Q <- ((S-20)/k)^(1/1.85)
-  return(Q)
-}
 
 # 
 # Draw.Legend <- function(LineText, LineColor, LineType) {
@@ -194,6 +208,9 @@ Calc.Q.at20 <- function(S,k) {
 #          , text.font=2
 #   )
 # }
+
+
+# Legacy ------------------------------------------------------------------
 
 n100 <- function(FlowScale,HeadScale, HeadUnits) {
   
@@ -299,4 +316,21 @@ n100 <- function(FlowScale,HeadScale, HeadUnits) {
   mtext(HeadText, side=2, line=3, cex=0.9, family="serif")
   mtext(paste0(FlowScaleText,"          ", HeadScaleText), side=4, cex=0.9, family="serif", line=1)
   #text((n*946)^1.85, MaxP*0.95, "SCALE _____", pos=1)
+}
+
+ffk <- function(Ps, Qt, Pt) {
+  Qi <- seq(0,10000,1000)
+  Pi <- Ps - (Ps-Pt)*(Qi/Qt)^1.85
+  
+  #lines(Qi^1.85,Pi, col=color, lwd=2, lty=LineType)
+  
+  k_psi <- (Ps-Pt)/(Qt^1.85)
+  
+  return(k_psi)
+}
+
+kl <- function(k, color="black", LineType=2, static=0){
+  Qi <- seq(0,10000,1000)
+  Pi <- k*Qi^1.85+static
+  lines(Qi^1.85,Pi, col=color, lwd=2, lty=LineType)
 }
