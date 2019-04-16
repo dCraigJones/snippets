@@ -6,9 +6,9 @@ Interpolates points along a curve from an image.
 ![](img/pumpHQ.jpg)
 
 ## Step 1: Select the Path Tool
-Start at shutoff head and working toward runout.
+Using the path tool, set the first anchor of the shut-off head (maximum head at zero flow).  Continue selecting points along the curve, working right toward pump runout.
 
-Select 10 or so, points along the curve at regular intervals.  
+Typically 10 or so points provides a good curve definition.
 
 Capture any major changes in the curve shape.
  
