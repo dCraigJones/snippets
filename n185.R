@@ -47,44 +47,70 @@ n185 <- function(MaxFlow=5000) {
   
 }
 
-ff <- function(Ps, Qt, Pt, color="black", LineType = 1) {
+draw <- function(fireflow, color="black", LineType=1) {
+  Ps <- unlist(fireflow[1])
+  k <- unlist(fireflow[2])
+  
   Qi <- seq(0,10000,1000)
-  Pi <- Ps - (Ps-Pt)*(Qi/Qt)^1.85
+  Pi <- Ps - k*Qi^1.85
+  #Pi <- Ps - (Ps-Pt)*(Qi/Qt)^1.85
   
-  lines(Qi^1.85,Pi, col=color, lwd=2, lty=LineType)
+  lines(Qi^1.85,Pi, col=color, lwd=2, lty=LineType) 
   
+}
+
+ff <- function(Ps, Qt, Pt, color="black", LineType = 1) {
   k_psi <- (Ps-Pt)/(Qt^1.85)
   
-  return(k_psi)
-}
+  ff <- structure(list(), class="fireflow")
+  ff[1] <- Ps
+  ff[2] <- k_psi
+  names(ff) <- c("Static", "k")
 
-shift <- function(Ps,k, color="black", LineType=1) {
-  ff(Ps,1000,Ps - k*1000^1.85, color, LineType)
-}
-
-tilt <- function(static,k,kf,color="black", LineType=1) {
-  Qt = 2000
   
-  ff(static,Qt,static-Qt^1.85*(kf+k), color,LineType)
+  return(ff)
 }
 
-aff <- function(S,k) {
-  Q <- ((S-20)/k)^(1/1.85)
+shift <- function(fireflow, static, color="black", LineType=1) {
+  fireflow[1] <- static
+  
+  return(fireflow)
+  #ff(Ps,1000,Ps - k*1000^1.85, color, LineType)
+}
+
+tilt <- function(fireflow, friction_factor,color="black", LineType=1) {
+  fireflow[2] <- unlist(fireflow[2])+friction_factor
+  
+  return(fireflow)
+  #ff(static,Qt,static-Qt^1.85*(kf+k), color,LineType)
+}
+
+aff <- function(fireflow, MinPressure=20) {
+  S <- unlist(fireflow[1])
+  k <- unlist(fireflow[2])
+  
+  Q <- ((S-MinPressure)/k)^(1/1.85)
+  names(Q) <- "Avail Fireflow (GPM)"
   return(Q)
 }
 
-nff <- function(Qi, Ps, Qt, Pt) {
-  Pi <- Ps - (Ps-Pt)*(Qi/Qt)^1.85
+nff <- function(fireflow, Q) {
+  Ps <- unlist(fireflow[1])
+  k <- unlist(fireflow[2])
+  
+  Pi <- Ps - (k)*(Q)^1.85
+  names(Pi) <- "Pressure (PSI)"
   return(Pi)
   
 }
 
-pt <- function(Qt, Pt, color){
-  points(Qt^1.85,Pt, pch=21, bg="white", col=color, lwd=2, cex=2)
-}
+ke <- function(D,C=135){return(10.44/C^1.85/D^4.87/2.31)}
 
-hl <- function(q,k) {
-  h <- k*q^1.85
-  return(h)
+# enter just Q, just P, or both
+pt <- function(Qt=NULL, Pt=NULL, fireflow=NULL, color="black"){
+  if(is.null(Qt)) Qt <- unname(aff(fireflow, Pt))
+  if(is.null(Pt)) Pt <- unname(nff(fireflow, Qt))
+  
+  points(Qt^1.85,Pt, pch=21, bg="white", col=color, lwd=2, cex=1.5)
 }
 
