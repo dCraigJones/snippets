@@ -1,10 +1,4 @@
-.libPaths("G:/Delivery/Shared/ACAD/JonesDC/_Support/RWD")
-
-
 Impute.WLL <- function(input) {
-    #input <- "./scada/3 - scada/WLL.csv"
-    #output <- "./scada/4 - impute/WLL.csv"
-    
   error_msg <- c("CommFail", "Comm Fail", "NotConnect", "I/OTimeout", "IntfShut", "Shutdown", "Configure","Tagnotfound", "[-10722]PINET:TimeoutonPIRPCorSystemCall.")
     
     numCols <- ncol(read.csv(input, header=TRUE, nrows=1))
@@ -25,7 +19,6 @@ Impute.WLL <- function(input) {
     
     WLL[, 2:ncol(WLL)] <- round(WLL[, 2:ncol(WLL)],2)
     
-    #write.csv(WLL, output)
     return(WLL)
 }
 
@@ -39,7 +32,7 @@ Impute.RUN <- function(input) {
     num_cols <- ncol(subset)
     
     # find columns with "RUN" in tag
-    run_cols <- grep("RUN", names(subset))
+    run_cols <- grep("RUN", toupper(names(subset)))
     
     # find columns for VFDs
     vfd_cols <- setdiff(2:num_cols, run_cols)
@@ -53,18 +46,19 @@ Impute.RUN <- function(input) {
                     , na.strings=error_msg
     )
     
-    
-    for (i in 1:length(run_cols)) {
-      r <- run_cols[i]
-      RUN[is.na(RUN[,r]),r] <- "OFF"
+    if(length(run_cols)>0) {
+      for (i in 1:length(run_cols)) {
+        r <- run_cols[i]
+        RUN[is.na(RUN[,r]),r] <- "OFF"
+      }
+      
+      for (i in 1:length(run_cols)) {
+        r <- run_cols[i]
+        RUN[RUN[,r]=="START",r] <- 1
+        RUN[RUN[,r]=="RUN",r] <- 1
+        RUN[!(RUN[,r]==1),r] <- -1
+      } 
     }
-    
-    for (i in 1:length(run_cols)) {
-      r <- run_cols[i]
-      RUN[RUN[,r]=="START",r] <- 1
-      RUN[RUN[,r]=="RUN",r] <- 1
-      RUN[!(RUN[,r]==1),r] <- -1
-    } 
     
     
     if(length(vfd_cols)>0) {
@@ -79,7 +73,19 @@ Impute.RUN <- function(input) {
         } 
     }
     
-    #write.csv(RUN, output)
     return(RUN)
 }
 
+Build.Import <- function(header, scada, import) {
+  h <- read.csv(header, header=FALSE)
+  s <- read.csv(scada, header=FALSE)
+  
+  s <- s[,2:ncol(s)]
+  
+  names(h) <- c(1:ncol(h))
+  names(s) <- c(1:ncol(s))
+  
+  x <- rbind(h,s)
+  
+  write.csv(x, file=import)
+}
