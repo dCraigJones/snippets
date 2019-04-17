@@ -104,7 +104,7 @@ nff <- function(fireflow, Q) {
   
 }
 
-ke <- function(D,C=135){return(10.44/C^1.85/D^4.87/2.31)}
+ke <- function(D,C=130){return(10.44/C^1.85/D^4.87/2.31)}
 
 # enter just Q, just P, or both
 pt <- function(Qt=NULL, Pt=NULL, fireflow=NULL, color="black"){
