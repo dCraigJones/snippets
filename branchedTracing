@@ -1,0 +1,21 @@
+/* Allows tracing of branched networks starting from multiple nodes. */
+
+/* Set Max Iterations */
+LET $n = 99;
+
+UPDATE [ALL Links] SET $link_selected = 0;
+UPDATE [All Nodes] SET $node_selected = 0;
+UPDATE SELECTED SET $node_selected = 1;
+
+LET $count = 0;
+
+WHILE $count < $n;
+	SET us_links.$link_selected = 1 WHERE $node_selected = 1 AND us_links.solution_model='Full';
+	UPDATE [ALL Links] SET us_node.$node_selected = 1 WHERE $link_selected = 1;
+	SELECT FROM [All Links] WHERE $link_selected = 1; 
+	SELECT FROM [All Nodes] WHERE $node_selected = 1;
+
+	LET $count = $count + 1;
+WEND;
+
+SELECT FROM [All Links] WHERE $link_selected = 1; SELECT FROM [All Nodes] WHERE $node_selected = 1;
