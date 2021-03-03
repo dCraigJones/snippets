@@ -1,4 +1,11 @@
-/* Allows tracing of branched networks starting from multiple nodes. */
+/* Allows tracing of branched networks starting from multiple nodes. 
+
+	USAGE:
+		Select one or more nodes and then run the following script.
+
+	Originally posted by Duncan Kitts
+	(https://forums.innovyze.com/archive/index.php?t-32.html)
+*/
 
 /* Set Max Iterations */
 LET $n = 99;
